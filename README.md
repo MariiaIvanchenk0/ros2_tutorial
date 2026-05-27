@@ -1,4 +1,9 @@
 # ros2_tutorial
+```
+mkdir -p mariia_ws/src
+cd src
+git clone link turtlesim_controller
+```
 
 ```
 colcon build --packages-select turtlesim_controller 
