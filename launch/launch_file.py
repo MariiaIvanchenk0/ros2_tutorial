@@ -8,7 +8,6 @@ def generate_launch_description():
         # ros2 run turtlesim turtlesim_node
         Node(
             package='turtlesim',
-            # namespace='turtle1',
             executable='turtlesim_node',
         ),
 
@@ -27,44 +26,41 @@ def generate_launch_description():
         #     ]
         # ),
 
-        # # ros2 run turtlesim turtle_teleop_key /turtle1/cmd_vel:=/turtle2/cmd_vel
-        # Node(
-        #     package='turtlesim',
-        #     executable='turtle_teleop_key',
-        #     remappings=[('/turtle1/cmd_vel', '/turtle2/cmd_vel')]
-        # ),
-
         # ros2 run turtlesim_controller go_to_goal_node --ros-args -r /turtle1/goal:=/turtle2/pose
         Node(
+            name='go_to_goal',
             package='turtlesim_controller',
             executable='go_to_goal_node',
-            remappings=[('/turtle1/goal', '/turtle2/pose')]
+            namespace='turtle1',
+            remappings=[('goal', '/turtle2/pose')]
         ),
 
-        # ros2 run turtlesim_controller turtle_pose_convert_node --ros-args -r __ns:=/turtle1
+        # ros2 run turtlesim_controller turtle_pose_convert_node --output robot1 --ros-args -r __ns:=/turtle1
         Node(
             package='turtlesim_controller',
             executable='turtle_pose_convert_node',
-            namespace='turtle1'
+            namespace='turtle1', 
+            parameters=['--output', 'robot1']
         ),
 
-        # ros2 run turtlesim_controller turtle_pose_convert_node --ros-args -r __ns:=/turtle2
+        # ros2 run turtlesim_controller turtle_pose_convert_node --output robot2 --ros-args -r __ns:=/turtle2
         Node(
             package='turtlesim_controller',
             executable='turtle_pose_convert_node',
-            namespace='turtle2'
+            namespace='turtle2',
+            parameters=['--output', 'robot2']
         ),
 
         # rviz2
         # TimerAction(
         #     period=2.0,
         #     actions=[
-        ExecuteProcess(
-            cmd=[
-                'rviz2',
-            ],
-            output='screen'
-        )
+        # ExecuteProcess(
+        #     cmd=[
+        #         'rviz2',
+        #     ],
+        #     output='screen'
+        # )
         #     ]
         # )
     ])

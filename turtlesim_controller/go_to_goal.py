@@ -17,12 +17,12 @@ class GoToGoalNode(Node):
         # Controller parameters
         
         # Publisher(s) 
-        self.pub = self.create_publisher(Twist, "/turtle1/cmd_vel", 10)
+        self.pub = self.create_publisher(Twist, "cmd_vel", 10)
 
         # Subscriber(s)
-        self.create_subscription(Pose, "turtle1/pose", self.subscriber_callback, 10)
+        self.create_subscription(Pose, "pose", self.subscriber_callback, 10)
 
-        self.create_subscription(Pose, "turtle1/goal", self.goal_callback, 10)
+        self.create_subscription(Pose, "goal", self.goal_callback, 10)
 
         # Timer (for loops if any)
         self.create_timer(0.1, self.timer_callback)

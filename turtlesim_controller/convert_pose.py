@@ -1,18 +1,20 @@
 import rclpy
 import math
+import argparse
 from rclpy.node import Node
 
 from geometry_msgs.msg import PoseStamped, Point, Quaternion
 from turtlesim.msg import Pose
 
+
 class ConvertPose(Node):
-    def __init__(self):
+    def __init__(self, output):
         super().__init__('turtlesim_convert_pose')
 
         self.turtle_pose = None
 
         # Publisher(s) 
-        self.pub = self.create_publisher(PoseStamped, "geometry_pose", 10)
+        self.pub = self.create_publisher(PoseStamped, f"/{output}/geometry_pose", 10)
 
         # Subscriber(s)
         self.create_subscription(Pose, "pose", self.subscriber_callback, 10)
@@ -70,9 +72,14 @@ def euler_to_quaternion(roll, pitch, yaw):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    parser = argparse.ArgumentParser()
+    # parser.add_init_argument = 
+    parser.add_argument("--output", type=str, required=True)
+    args, unknown_args = parser.parse_known_args()
 
-    node = ConvertPose()
+    rclpy.init(args=unknown_args)
+
+    node = ConvertPose(output=args.output)
 
     rclpy.spin(node)
 
