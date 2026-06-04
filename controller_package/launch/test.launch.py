@@ -8,6 +8,6 @@ def generate_launch_description():
         Node(
             package='controller_package',
             executable='drive_in_circle_node',
-            arguments=['--output', 'robot_1']
+            arguments=['--output', 'robot_1', '--radius', '0.15']
         )
     ])
