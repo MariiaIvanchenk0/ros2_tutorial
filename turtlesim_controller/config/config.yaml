@@ -1,0 +1,5 @@
+/turtle1/go_to_goal:
+  ros__parameters:
+    kv: 1.5
+    kw: 1.5
+    tolerance: 0.5
