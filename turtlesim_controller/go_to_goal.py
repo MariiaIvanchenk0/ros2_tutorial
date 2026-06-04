@@ -7,7 +7,7 @@ from turtlesim_controller.control_law import compute_go_to_goal_control
 
 class GoToGoalNode(Node):
     def __init__(self, namespace='turtle1'):
-        super().__init__('turtlesim_go_to_goal')
+        super().__init__('go_to_goal') #turtlesim_go_to_goal
 
         self.pose = None
         self.goal = None
@@ -15,6 +15,9 @@ class GoToGoalNode(Node):
         # attributed of classes (local variables)
         
         # Controller parameters
+        self.declare_parameter('kv', 1.0)
+        self.declare_parameter('kw', 1.0)
+        self.declare_parameter('tolerance', 0.1)
         
         # Publisher(s) 
         self.pub = self.create_publisher(Twist, "cmd_vel", 10)
@@ -45,6 +48,13 @@ class GoToGoalNode(Node):
             msg.angular.z = w # 0.5
             
         self.pub.publish(msg)
+
+        kv = self.get_parameter('kv').value
+        kw = self.get_parameter('kw').value
+        tolerance = self.get_parameter('tolerance').value
+
+        self.get_logger().info(f'kv: {kv}, kw: {kw}, tolerance: {tolerance}.\n')
+
 
 def main(args=None):
     rclpy.init(args=args)

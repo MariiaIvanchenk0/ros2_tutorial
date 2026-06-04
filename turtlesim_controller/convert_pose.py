@@ -13,7 +13,7 @@ class ConvertPose(Node):
 
         self.turtle_pose = None
 
-        # Publisher(s) 
+        # Publisher(s)
         self.pub = self.create_publisher(PoseStamped, f"/{output}/geometry_pose", 10)
 
         # Subscriber(s)
