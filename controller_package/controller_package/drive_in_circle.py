@@ -17,8 +17,8 @@ class DriveInCircleNode(Node):
     def timer_callback(self):
         msg = Twist()
 
-        msg.linear.x = 0.6
-        msg.angular.z = 0.4
+        msg.linear.x = 0.06
+        msg.angular.z = 0.8
             
         self.pub.publish(msg)
 
