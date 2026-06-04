@@ -1,12 +1,12 @@
 import rclpy
 from rclpy.node import Node
-
+import argparse
 from geometry_msgs.msg import Twist, Point
 from turtlesim.msg import Pose
 from turtlesim_controller.control_law import compute_go_to_goal_control
 
 class GoToGoalNode(Node):
-    def __init__(self, namespace='turtle1'):
+    def __init__(self, output):
         super().__init__('go_to_goal') #turtlesim_go_to_goal
 
         self.pose = None
@@ -20,7 +20,7 @@ class GoToGoalNode(Node):
         self.declare_parameter('tolerance', 0.1)
         
         # Publisher(s) 
-        self.pub = self.create_publisher(Twist, "cmd_vel", 10)
+        self.pub = self.create_publisher(Twist, f"/{output}/cmd_vel", 10)
 
         # Subscriber(s)
         self.create_subscription(Pose, "pose", self.subscriber_callback, 10)
@@ -57,9 +57,13 @@ class GoToGoalNode(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=str)
+    args, unknown_args = parser.parse_known_args()
 
-    node = GoToGoalNode()
+    rclpy.init(args=unknown_args)
+
+    node = GoToGoalNode(output=args.output)
 
     rclpy.spin(node)
 

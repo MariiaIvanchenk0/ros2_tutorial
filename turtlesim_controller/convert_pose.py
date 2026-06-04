@@ -73,7 +73,6 @@ def euler_to_quaternion(roll, pitch, yaw):
 
 def main(args=None):
     parser = argparse.ArgumentParser()
-    # parser.add_init_argument = 
     parser.add_argument("--output", type=str, required=True)
     args, unknown_args = parser.parse_known_args()
 
