@@ -1,0 +1,20 @@
+running egg_info
+writing build/vicon_test_control/vicon_test_control.egg-info/PKG-INFO
+writing dependency_links to build/vicon_test_control/vicon_test_control.egg-info/dependency_links.txt
+writing entry points to build/vicon_test_control/vicon_test_control.egg-info/entry_points.txt
+writing requirements to build/vicon_test_control/vicon_test_control.egg-info/requires.txt
+writing top-level names to build/vicon_test_control/vicon_test_control.egg-info/top_level.txt
+reading manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+writing manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control-0.0.0-py3.10.egg-info' (and everything under it)
+Copying build/vicon_test_control/vicon_test_control.egg-info to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control-0.0.0-py3.10.egg-info
+running install_scripts
+Installing convert_to_pose_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+Installing go_to_goal_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+writing list of installed files to '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log'

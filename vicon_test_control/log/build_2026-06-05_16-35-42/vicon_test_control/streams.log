@@ -1,0 +1,25 @@
+[0.597s] Invoking command in '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control': PYTHONPATH=/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/vicon_test_control build --build-base /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build install --record /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log --single-version-externally-managed install_data
+[0.815s] running egg_info
+[0.815s] writing build/vicon_test_control/vicon_test_control.egg-info/PKG-INFO
+[0.815s] writing dependency_links to build/vicon_test_control/vicon_test_control.egg-info/dependency_links.txt
+[0.815s] writing entry points to build/vicon_test_control/vicon_test_control.egg-info/entry_points.txt
+[0.815s] writing requirements to build/vicon_test_control/vicon_test_control.egg-info/requires.txt
+[0.816s] writing top-level names to build/vicon_test_control/vicon_test_control.egg-info/top_level.txt
+[0.817s] reading manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+[0.817s] writing manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+[0.818s] running build
+[0.818s] running build_py
+[0.818s] copying vicon_test_control/convert_to_pose.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.818s] running install
+[0.818s] running install_lib
+[0.819s] copying /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control/convert_to_pose.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.819s] byte-compiling /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control/convert_to_pose.py to convert_to_pose.cpython-310.pyc
+[0.820s] running install_data
+[0.820s] running install_egg_info
+[0.821s] removing '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control-0.0.0-py3.10.egg-info' (and everything under it)
+[0.822s] Copying build/vicon_test_control/vicon_test_control.egg-info to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control-0.0.0-py3.10.egg-info
+[0.822s] running install_scripts
+[0.840s] Installing convert_to_pose_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+[0.840s] Installing go_to_goal_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+[0.840s] writing list of installed files to '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log'
+[0.858s] Invoked command in '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control' returned '0': PYTHONPATH=/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/vicon_test_control build --build-base /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build install --record /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log --single-version-externally-managed install_data

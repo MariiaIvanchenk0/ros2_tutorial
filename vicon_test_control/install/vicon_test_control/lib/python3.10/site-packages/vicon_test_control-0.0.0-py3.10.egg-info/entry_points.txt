@@ -1,0 +1,4 @@
+[console_scripts]
+convert_to_pose_node = vicon_test_control.convert_to_pose:main
+go_to_goal_node = vicon_test_control.go_to_goal:main
+

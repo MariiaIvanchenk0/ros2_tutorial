@@ -1,0 +1,44 @@
+[0.578s] Invoking command in '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control': PYTHONPATH=/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/vicon_test_control build --build-base /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build install --record /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log --single-version-externally-managed install_data
+[0.802s] running egg_info
+[0.803s] creating build/vicon_test_control/vicon_test_control.egg-info
+[0.803s] writing build/vicon_test_control/vicon_test_control.egg-info/PKG-INFO
+[0.803s] writing dependency_links to build/vicon_test_control/vicon_test_control.egg-info/dependency_links.txt
+[0.803s] writing entry points to build/vicon_test_control/vicon_test_control.egg-info/entry_points.txt
+[0.803s] writing requirements to build/vicon_test_control/vicon_test_control.egg-info/requires.txt
+[0.803s] writing top-level names to build/vicon_test_control/vicon_test_control.egg-info/top_level.txt
+[0.803s] writing manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+[0.805s] reading manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+[0.806s] writing manifest file 'build/vicon_test_control/vicon_test_control.egg-info/SOURCES.txt'
+[0.806s] running build
+[0.806s] running build_py
+[0.806s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build
+[0.806s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib
+[0.806s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.806s] copying vicon_test_control/convert_to_pose.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.806s] copying vicon_test_control/__init__.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.806s] copying vicon_test_control/go_to_goal.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.806s] copying vicon_test_control/control_law.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control
+[0.806s] running install
+[0.807s] running install_lib
+[0.807s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.807s] copying /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control/convert_to_pose.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.807s] copying /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control/__init__.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.808s] copying /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control/go_to_goal.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.808s] copying /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build/lib/vicon_test_control/control_law.py -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control
+[0.809s] byte-compiling /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control/convert_to_pose.py to convert_to_pose.cpython-310.pyc
+[0.809s] byte-compiling /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control/__init__.py to __init__.cpython-310.pyc
+[0.809s] byte-compiling /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control/go_to_goal.py to go_to_goal.cpython-310.pyc
+[0.810s] byte-compiling /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control/control_law.py to control_law.cpython-310.pyc
+[0.810s] running install_data
+[0.810s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/share/ament_index
+[0.810s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/share/ament_index/resource_index
+[0.810s] creating /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/share/ament_index/resource_index/packages
+[0.810s] copying resource/vicon_test_control -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/share/ament_index/resource_index/packages
+[0.810s] copying package.xml -> /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/share/vicon_test_control
+[0.810s] running install_egg_info
+[0.812s] Copying build/vicon_test_control/vicon_test_control.egg-info to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages/vicon_test_control-0.0.0-py3.10.egg-info
+[0.813s] running install_scripts
+[0.831s] Installing convert_to_pose_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+[0.831s] Installing go_to_goal_node script to /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/vicon_test_control
+[0.831s] writing list of installed files to '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log'
+[0.850s] Invoked command in '/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control' returned '0': PYTHONPATH=/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/install/vicon_test_control/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/vicon_test_control build --build-base /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/build install --record /home/mission-control/mariia_tutorial_ws/src/turtlesim_controller/vicon_test_control/build/vicon_test_control/install.log --single-version-externally-managed install_data
