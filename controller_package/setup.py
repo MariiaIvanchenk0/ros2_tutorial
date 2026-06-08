@@ -12,7 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', 'test.launch*.[pxy][yma]*'))),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', 'circle.launch*.[pxy][yma]*'))),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', 'follow.launch*.[pxy][yma]*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,7 +24,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'drive_in_circle_node = controller_package.drive_in_circle:main'
+            'drive_in_circle_node = controller_package.drive_in_circle:main',
+            'follow_node = controller_package.follow:main',
+            'aruco_reader_node = controller_package.read_aruco:main'
         ],
     },
 )
