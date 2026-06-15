@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import rclpy
+import argparse
 from rclpy.node import Node
 from geometry_msgs.msg import Point
 import cv2
 import numpy as np
 
 class ArucoReaderNode(Node):
-    def __init__(self):
+    def __init__(self, output):
         super().__init__('aruco_reader')
         
-        self.position_publisher = self.create_publisher(Point, '/aruco_position', 10)
+        self.position_publisher = self.create_publisher(Point, f'/{output}/aruco_position', 10)
         
         self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
         self.aruco_params = cv2.aruco.DetectorParameters()
@@ -17,9 +18,12 @@ class ArucoReaderNode(Node):
         
         # Define physical marker size in METERS (e.g., 10 cm = 0.1m)
         # CRITICAL: Change this to match your printed marker's exact size!
-        self.marker_length = 0.05 
+        self.marker_length = 0.07
         
-        self.cap = cv2.VideoCapture(0)
+        # self.cap = cv2.VideoCapture(0)
+        camera_index = 0
+        self.cap = cv2.VideoCapture(camera_index)
+
         if not self.cap.isOpened():
             self.get_logger().error("Could not open local video stream/webcam!")
             return
@@ -36,7 +40,13 @@ class ArucoReaderNode(Node):
     def process_frame(self):
         ret, frame = self.cap.read()
         if not ret:
-            return
+            msg = Point()
+            msg.x = 0.0
+            msg.y = 0.0
+            msg.z = 0.0
+            self.position_publisher.publish(msg)
+            self.get_logger().info(f"X: {x_cam}m, Y: {y_cam}m, Z (Distance): {z_cam}m")
+
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = self.detector.detectMarkers(gray)
@@ -65,7 +75,7 @@ class ArucoReaderNode(Node):
             msg.x = float(x_cam)
             msg.y = float(y_cam)
             msg.z = float(z_cam)
-            self.position_publisher.publish(msg)     
+            self.position_publisher.publish(msg)
             self.get_logger().info(f"X: {x_cam}m, Y: {y_cam}m, Z (Distance): {z_cam}m")
 
             # Draw visual guides on the live frame for debugging
@@ -77,8 +87,12 @@ class ArucoReaderNode(Node):
             self.destroy_node()
 
 def main(args=None):
-    rclpy.init(args=args)
-    node = ArucoReaderNode()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', type=str)
+    args, unknown_args = parser.parse_known_args()
+
+    rclpy.init(args=unknown_args)
+    node = ArucoReaderNode(output=args.output)
 
     try:
         rclpy.spin(node)
