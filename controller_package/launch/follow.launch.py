@@ -1,6 +1,9 @@
+import os
+from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
-# from launch.actions import ExecuteProcess
 from launch_ros.actions import Node
+
+params_file = os.path.join(get_package_share_directory('controller_package'), 'config', 'params.yaml')
 
 def generate_launch_description():
     return LaunchDescription([
@@ -14,6 +17,7 @@ def generate_launch_description():
         Node(
             package='controller_package',
             executable='follow_node',
-            arguments=['--output', 'robot_1']
+            arguments=['--output', 'robot_1'],
+            parameters=[params_file]
         )
     ])

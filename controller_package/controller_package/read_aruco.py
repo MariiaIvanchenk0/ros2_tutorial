@@ -40,13 +40,10 @@ class ArucoReaderNode(Node):
     def process_frame(self):
         ret, frame = self.cap.read()
         if not ret:
-            msg = Point()
-            msg.x = 0.0
-            msg.y = 0.0
-            msg.z = 0.0
-            self.position_publisher.publish(msg)
-            self.get_logger().info(f"X: {x_cam}m, Y: {y_cam}m, Z (Distance): {z_cam}m")
-
+            # no frame -> publish "no detection" sentinel and bail out
+            self.position_publisher.publish(Point())
+            self.get_logger().warn("No frame from camera.")
+            return
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = self.detector.detectMarkers(gray)
@@ -81,6 +78,9 @@ class ArucoReaderNode(Node):
             # Draw visual guides on the live frame for debugging
             cv2.aruco.drawDetectedMarkers(frame, corners, ids)
             cv2.drawFrameAxes(frame, self.camera_matrix, self.dist_coeffs, rvec, tvec, 0.05)
+        else:
+            # marker 0 not visible -> tell the follower so it can stop
+            self.position_publisher.publish(Point())
 
         cv2.imshow("ArUco Testing Feed", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

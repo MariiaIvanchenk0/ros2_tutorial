@@ -11,14 +11,28 @@ class FollowNode(Node):
 
         self.follow_enabled = False
         self.goal = None
-        self.safe_distance = 0.3
-        self.Kp_linear = 0.4
-        self.Kp_angular = 0.3
+
+        # filter state and time of last valid detection
+        self.x_filt = None
+        self.z_filt = None
+        self.last_seen = None
+
+        self.declare_parameter('safe_distance', 0.3)
+        self.declare_parameter('Kp_linear', 0.4)
+        self.declare_parameter('Kp_angular', 0.3)
+        # safety / smoothing
+        self.declare_parameter('max_linear', 0.25)        # m/s
+        self.declare_parameter('max_angular', 0.8)        # rad/s
+        self.declare_parameter('distance_deadband', 0.05) # m
+        self.declare_parameter('lateral_deadband', 0.03)  # m, ignore tiny offsets
+        self.declare_parameter('heading_deadband', 0.05)  # rad
+        self.declare_parameter('filter_alpha', 0.4)       # 0..1, lower = smoother
+        self.declare_parameter('lost_timeout', 0.5)       # s, stop if no marker
 
         self.enable = self.create_service(Empty, f'/{output}/enable_follow', self.enable_follow_callback)
         self.disable = self.create_service(Empty, f'/{output}/disable_follow', self.disable_follow_callback)
         
-        self.pub = self.create_publisher(Twist, f"/{output}/cmd_vel", 10) # robot_1
+        self.pub = self.create_publisher(Twist, f"/{output}/cmd_vel", 10)
 
         self.create_subscription(Point, f'/{output}/aruco_position', self.position_callback, 10)
 
@@ -35,31 +49,78 @@ class FollowNode(Node):
         return response
 
     def position_callback(self, msg):
+        # read_aruco publishes (0, 0, 0) when nothing is detected -> ignore it
+        if msg.x == 0.0 and msg.y == 0.0 and msg.z == 0.0:
+            return
         self.goal = [msg.x, msg.y, msg.z]
+        self.last_seen = self.get_clock().now()
 
     def timer_callback(self):
-        msg = Twist()
+        safe_distance = self.get_parameter('safe_distance').value
+        Kp_linear = self.get_parameter('Kp_linear').value
+        Kp_angular = self.get_parameter('Kp_angular').value
+        max_linear = self.get_parameter('max_linear').value
+        max_angular = self.get_parameter('max_angular').value
+        distance_deadband = self.get_parameter('distance_deadband').value
+        lateral_deadband = self.get_parameter('lateral_deadband').value
+        heading_deadband = self.get_parameter('heading_deadband').value
+        alpha = self.get_parameter('filter_alpha').value
+        lost_timeout = self.get_parameter('lost_timeout').value
 
-        if self.follow_enabled and self.goal is not None:
-            distance_error = self.goal[2] - self.safe_distance
-            heading_error = -math.atan2(self.goal[0], self.goal[2])
+        # --- marker-loss safety: stop if disabled, no goal, or detection is stale ---
+        marker_visible = (
+            self.follow_enabled
+            and self.goal is not None
+            and self.last_seen is not None
+            and (self.get_clock().now() - self.last_seen).nanoseconds * 1e-9 < lost_timeout
+        )
 
-            if abs(distance_error) <= 0.05:
-                msg.linear.x = 0.0
-            else:
-                msg.linear.x = self.Kp_linear * distance_error
+        if not marker_visible:
+            # forget the stale target and reset the filter so we don't lurch on re-acquire
+            self.goal = None
+            self.x_filt = None
+            self.z_filt = None
+            self.pub.publish(Twist())  # all zeros -> robot stops
+            return
 
-            if abs(heading_error) > 0.05:
-                msg.angular.z = self.Kp_angular * heading_error
-            else:
-                msg.angular.z = 0.0
+        x_raw, _, z_raw = self.goal  # x = lateral (right +), z = forward distance
+
+        # --- low-pass filter to suppress solvePnP jitter / pose flips ---
+        self.x_filt = x_raw if self.x_filt is None else alpha * x_raw + (1 - alpha) * self.x_filt
+        self.z_filt = z_raw if self.z_filt is None else alpha * z_raw + (1 - alpha) * self.z_filt
+        x, z = self.x_filt, self.z_filt
+
+        # --- distance control (forward/back to hold safe_distance) ---
+        distance_error = z - safe_distance
+        if abs(distance_error) <= distance_deadband:
+            v = 0.0
         else:
-            msg.linear.x = 0.0
-            msg.angular.z = 0.0
+            v = Kp_linear * distance_error
 
+        # --- heading control (ignore tiny lateral offsets) ---
+        if abs(x) <= lateral_deadband:
+            heading_error = 0.0
+        else:
+            heading_error = -math.atan2(x, z)
+
+        if abs(heading_error) <= heading_deadband:
+            w = 0.0
+        else:
+            w = Kp_angular * heading_error
+
+        # turn first, drive later: scale forward speed down during large turns
+        v *= max(0.0, math.cos(heading_error))
+
+        # --- saturate so a noisy spike can never command a violent move ---
+        v = max(-max_linear, min(max_linear, v))
+        w = max(-max_angular, min(max_angular, w))
+
+        msg = Twist()
+        msg.linear.x = v
+        msg.angular.z = w
         self.pub.publish(msg)
 
-        self.get_logger().info(f'linear.x: {msg.linear.x}, angular.z: {msg.angular.z}.\n')
+        self.get_logger().info(f'linear.x: {msg.linear.x:.3f}, angular.z: {msg.angular.z:.3f}.\n')
 
     def stop_robot(self):
         msg = Twist()
@@ -79,17 +140,12 @@ def main(args=None):
     args, unknown_args = parser.parse_known_args()
 
     rclpy.init(args=unknown_args)
-    
     node = FollowNode(output=args.output)
-#    executor = MultiThreadedExecutor()
-#    executor.add_node(node)
 
     try:
         rclpy.spin(node)
-#    executor.spin()
     except KeyboardInterrupt:
         node.stop_robot()
-
 
     node.destroy_node()
     rclpy.shutdown()
