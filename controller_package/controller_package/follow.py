@@ -26,7 +26,7 @@ class FollowNode(Node):
         self.declare_parameter('distance_deadband', 0.05) # m
         self.declare_parameter('lateral_deadband', 0.03)  # m, ignore tiny offsets
         self.declare_parameter('heading_deadband', 0.05)  # rad
-        self.declare_parameter('filter_alpha', 0.4)       # 0..1, lower = smoother
+        # self.declare_parameter('filter_alpha', 0.4)       # 0..1, lower = smoother
         self.declare_parameter('lost_timeout', 0.5)       # s, stop if no marker
 
         self.enable = self.create_service(Empty, f'/{output}/enable_follow', self.enable_follow_callback)
@@ -64,7 +64,7 @@ class FollowNode(Node):
         distance_deadband = self.get_parameter('distance_deadband').value
         lateral_deadband = self.get_parameter('lateral_deadband').value
         heading_deadband = self.get_parameter('heading_deadband').value
-        alpha = self.get_parameter('filter_alpha').value
+        # alpha = self.get_parameter('filter_alpha').value
         lost_timeout = self.get_parameter('lost_timeout').value
 
         # --- marker-loss safety: stop if disabled, no goal, or detection is stale ---
@@ -86,9 +86,10 @@ class FollowNode(Node):
         x_raw, _, z_raw = self.goal  # x = lateral (right +), z = forward distance
 
         # --- low-pass filter to suppress solvePnP jitter / pose flips ---
-        self.x_filt = x_raw if self.x_filt is None else alpha * x_raw + (1 - alpha) * self.x_filt
-        self.z_filt = z_raw if self.z_filt is None else alpha * z_raw + (1 - alpha) * self.z_filt
-        x, z = self.x_filt, self.z_filt
+        # self.x_filt = x_raw if self.x_filt is None else alpha * x_raw + (1 - alpha) * self.x_filt
+        # self.z_filt = z_raw if self.z_filt is None else alpha * z_raw + (1 - alpha) * self.z_filt
+        # x, z = self.x_filt, self.z_filt
+        x, z = x_raw, y_raw
 
         # --- distance control (forward/back to hold safe_distance) ---
         distance_error = z - safe_distance
