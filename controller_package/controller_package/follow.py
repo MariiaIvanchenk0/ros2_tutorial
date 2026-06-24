@@ -50,7 +50,9 @@ class FollowLifecycleNode(LifecycleNode):
         """
         self.get_logger().info("Activating node...")
         self.pub.on_activate()
-        return super().on_activate(state)
+        # return super().on_activate(state)
+        return TransitionCallbackReturn.SUCCESS
+
     
     def on_deactivate(self, state):
         """
@@ -60,7 +62,9 @@ class FollowLifecycleNode(LifecycleNode):
         self.get_logger().info("Deactivating node...")
         self.stop_robot()
         self.pub.on_deactivate()
-        return super().on_deactivate(state)
+        # return super().on_deactivate(state)
+        return TransitionCallbackReturn.SUCCESS
+
 
     def on_cleanup(self, state):
         """
