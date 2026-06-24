@@ -1,7 +1,7 @@
 import math
 import rclpy
 import argparse
-# from std_srvs.srv import Empty
+from std_srvs.srv import Empty
 from geometry_msgs.msg import Twist, Point
 from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle import TransitionCallbackReturn
@@ -34,8 +34,8 @@ class FollowLifecycleNode(LifecycleNode):
         """
         self.get_logger().info("Configuring node...")
 
-        # self.enable = self.create_service(Empty, f'/{output}/enable_follow', self.enable_follow_callback)
-        # self.disable = self.create_service(Empty, f'/{output}/disable_follow', self.disable_follow_callback)
+        self.enable = self.create_service(Empty, f'/{self.output}/enable_follow', self.enable_follow_callback)
+        self.disable = self.create_service(Empty, f'/{self.output}/disable_follow', self.disable_follow_callback)
         
         self.sub = self.create_subscription(Point, f'/{self.output}/aruco_position', self.position_callback, 10)
         self.pub = self.create_publisher(Twist, f"/{self.output}/cmd_vel", 10)
@@ -49,8 +49,10 @@ class FollowLifecycleNode(LifecycleNode):
         Activate your lifecycle publishers here.
         """
         self.get_logger().info("Activating node...")
-        self.pub.on_activate()
-        # return super().on_activate(state)
+        if self.pub is not None:
+            self.pub.on_activate()
+        
+        super().on_activate(state)
         return TransitionCallbackReturn.SUCCESS
 
     
@@ -61,8 +63,10 @@ class FollowLifecycleNode(LifecycleNode):
         """
         self.get_logger().info("Deactivating node...")
         self.stop_robot()
-        self.pub.on_deactivate()
-        # return super().on_deactivate(state)
+        if self.pub is not None:
+            self.pub.on_deactivate()
+        
+        super().on_deactivate(state)
         return TransitionCallbackReturn.SUCCESS
 
 
@@ -73,6 +77,8 @@ class FollowLifecycleNode(LifecycleNode):
         """
         self.get_logger().info("Cleaning up node...")
         
+        self.destroy_service(self.enable_srv)
+        self.destroy_service(self.disable_srv)
         self.destroy_timer(self.timer)
         self.destroy_publisher(self.pub)
         self.destroy_subscription(self.sub)
@@ -93,15 +99,15 @@ class FollowLifecycleNode(LifecycleNode):
             pass
         return TransitionCallbackReturn.SUCCESS
 
-    # def enable_follow_callback(self, request, response):
-    #     self.follow_enabled = True
-    #     self.get_logger().info("Follow is ON.")
-    #     return response
+    def enable_follow_callback(self, request, response):
+        self.follow_enabled = True
+        self.get_logger().info("Follow is ON.")
+        return response
     
-    # def disable_follow_callback(self, request, response):
-    #     self.follow_enabled = False
-    #     self.get_logger().info("Follow is OFF.")
-    #     return response
+    def disable_follow_callback(self, request, response):
+        self.follow_enabled = False
+        self.get_logger().info("Follow is OFF.")
+        return response
 
     def position_callback(self, msg):
         # read_aruco publishes (0, 0, 0) when nothing is detected -> ignore it
