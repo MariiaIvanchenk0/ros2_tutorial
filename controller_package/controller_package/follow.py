@@ -1,21 +1,19 @@
 import math
 import rclpy
 import argparse
-from rclpy.node import Node
-from std_srvs.srv import Empty
+# from std_srvs.srv import Empty
 from geometry_msgs.msg import Twist, Point
+from rclpy.lifecycle import LifecycleNode
+from rclpy.lifecycle import TransitionCallbackReturn
 
-class FollowNode(Node):
+class FollowLifecycleNode(LifecycleNode):
     def __init__(self, output):
         super().__init__('follow')
 
-        self.follow_enabled = False
+        # self.follow_enabled = False
         self.goal = None
-
-        # filter state and time of last valid detection
-        self.x_filt = None
-        self.z_filt = None
         self.last_seen = None
+        self.output = output
 
         self.declare_parameter('safe_distance', 0.3)
         self.declare_parameter('Kp_linear', 0.4)
@@ -26,27 +24,80 @@ class FollowNode(Node):
         self.declare_parameter('distance_deadband', 0.05) # m
         self.declare_parameter('lateral_deadband', 0.03)  # m, ignore tiny offsets
         self.declare_parameter('heading_deadband', 0.05)  # rad
-        # self.declare_parameter('filter_alpha', 0.4)       # 0..1, lower = smoother
         self.declare_parameter('lost_timeout', 0.5)       # s, stop if no marker
 
-        self.enable = self.create_service(Empty, f'/{output}/enable_follow', self.enable_follow_callback)
-        self.disable = self.create_service(Empty, f'/{output}/disable_follow', self.disable_follow_callback)
+    
+    def on_configure(self, state):
+        """
+        Handles transition from Unconfigured to Inactive.
+        Set up publishers, subscribers, and parameters here.
+        """
+        self.get_logger().info("Configuring node...")
+
+        # self.enable = self.create_service(Empty, f'/{output}/enable_follow', self.enable_follow_callback)
+        # self.disable = self.create_service(Empty, f'/{output}/disable_follow', self.disable_follow_callback)
         
-        self.pub = self.create_publisher(Twist, f"/{output}/cmd_vel", 10)
-
-        self.create_subscription(Point, f'/{output}/aruco_position', self.position_callback, 10)
-
+        self.sub = self.create_subscription(Point, f'/{self.output}/aruco_position', self.position_callback, 10)
+        self.pub = self.create_publisher(Twist, f"/{self.output}/cmd_vel", 10)
         self.create_timer(0.1, self.timer_callback)
+        
+        return TransitionCallbackReturn.SUCCESS
     
-    def enable_follow_callback(self, request, response):
-        self.follow_enabled = True
-        self.get_logger().info("Follow is ON.")
-        return response
+    def on_activate(self, state):
+        """
+        Handles transition from Inactive to Active.
+        Activate your lifecycle publishers here.
+        """
+        self.get_logger().info("Activating node...")
+        self.pub.on_activate()
+        return super().on_activate(state)
     
-    def disable_follow_callback(self, request, response):
-        self.follow_enabled = False
-        self.get_logger().info("Follow is OFF.")
-        return response
+    def on_deactivate(self, state):
+        """
+        Handles transition from Active to Inactive.
+        Deactivate publishers and stop timers/processing.
+        """
+        self.get_logger().info("Deactivating node...")
+        self.stop_robot()
+        self.pub.on_deactivate()
+        return super().on_deactivate(state)
+
+    def on_cleanup(self, state):
+        """
+        Handles transition from Inactive to Unconfigured.
+        Clean up resources and destroy publishers/timers.
+        """
+        self.get_logger().info("Cleaning up node...")
+        
+        self.destroy_timer(self.timer)
+        self.destroy_publisher(self.pub)
+        self.destroy_subscription(self.sub)
+
+        self.goal = None
+        self.last_seen = None
+        
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_shutdown(self, state):
+        """
+        Handles transition to the Finalized state from any state.
+        """
+        self.get_logger().info("Shutting down node...")
+        try:
+            self.stop_robot()
+        except Exception:
+            pass
+        return TransitionCallbackReturn.SUCCESS
+
+    # def enable_follow_callback(self, request, response):
+    #     self.follow_enabled = True
+    #     self.get_logger().info("Follow is ON.")
+    #     return response
+    
+    # def disable_follow_callback(self, request, response):
+    #     self.follow_enabled = False
+    #     self.get_logger().info("Follow is OFF.")
+    #     return response
 
     def position_callback(self, msg):
         # read_aruco publishes (0, 0, 0) when nothing is detected -> ignore it
@@ -64,13 +115,12 @@ class FollowNode(Node):
         distance_deadband = self.get_parameter('distance_deadband').value
         lateral_deadband = self.get_parameter('lateral_deadband').value
         heading_deadband = self.get_parameter('heading_deadband').value
-        # alpha = self.get_parameter('filter_alpha').value
         lost_timeout = self.get_parameter('lost_timeout').value
 
         # --- marker-loss safety: stop if disabled, no goal, or detection is stale ---
         marker_visible = (
-            self.follow_enabled
-            and self.goal is not None
+            # self.follow_enabled and
+            self.goal is not None
             and self.last_seen is not None
             and (self.get_clock().now() - self.last_seen).nanoseconds * 1e-9 < lost_timeout
         )
@@ -78,18 +128,10 @@ class FollowNode(Node):
         if not marker_visible:
             # forget the stale target and reset the filter so we don't lurch on re-acquire
             self.goal = None
-            self.x_filt = None
-            self.z_filt = None
             self.pub.publish(Twist())  # all zeros -> robot stops
             return
 
-        x_raw, _, z_raw = self.goal  # x = lateral (right +), z = forward distance
-
-        # --- low-pass filter to suppress solvePnP jitter / pose flips ---
-        # self.x_filt = x_raw if self.x_filt is None else alpha * x_raw + (1 - alpha) * self.x_filt
-        # self.z_filt = z_raw if self.z_filt is None else alpha * z_raw + (1 - alpha) * self.z_filt
-        # x, z = self.x_filt, self.z_filt
-        x, z = x_raw, y_raw
+        x, _, z = self.goal  # x = lateral (right +), z = forward distance
 
         # --- distance control (forward/back to hold safe_distance) ---
         distance_error = z - safe_distance
@@ -124,15 +166,15 @@ class FollowNode(Node):
         self.get_logger().info(f'linear.x: {msg.linear.x:.3f}, angular.z: {msg.angular.z:.3f}.\n')
 
     def stop_robot(self):
-        msg = Twist()
+        if self.pub is not None and self.pub.is_activated():
+            msg = Twist()
+            msg.linear.x = 0.0
+            msg.angular.z = 0.0
+            
+            for _ in range(3):
+                self.pub.publish(msg)
 
-        msg.linear.x = 0.0
-        msg.angular.z = 0.0
-        
-        for _ in range(3):
-            self.pub.publish(msg)
-
-        self.get_logger().info(f'linear.x: {msg.linear.x}, angular.z: {msg.angular.z} --> Stop.\n')
+            self.get_logger().info(f'linear.x: {msg.linear.x}, angular.z: {msg.angular.z} --> Stop.\n')
 
 
 def main(args=None):
@@ -141,7 +183,7 @@ def main(args=None):
     args, unknown_args = parser.parse_known_args()
 
     rclpy.init(args=unknown_args)
-    node = FollowNode(output=args.output)
+    node = FollowLifecycleNode(output=args.output)
 
     try:
         rclpy.spin(node)
