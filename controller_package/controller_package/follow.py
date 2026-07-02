@@ -39,7 +39,6 @@ class FollowLifecycleNode(LifecycleNode):
         
         self.sub = self.create_subscription(Point, f'/{self.output}/aruco_position', self.position_callback, 10)
         self.pub = self.create_lifecycle_publisher(Twist, f"/{self.output}/cmd_vel", 10)
-        self.create_timer(0.1, self.timer_callback)
         
         return TransitionCallbackReturn.SUCCESS
     
@@ -48,12 +47,19 @@ class FollowLifecycleNode(LifecycleNode):
         Handles transition from Inactive to Active.
         Activate your lifecycle publishers here.
         """
-        self.get_logger().info("Activating node...")
-        if self.pub is not None:
-            self.pub.on_activate()
-        
-        # super().on_activate(state)
-        return TransitionCallbackReturn.SUCCESS
+        try: 
+            self.get_logger().info("Activating node...")
+            if self.pub is not None:
+                self.pub.on_activate(state)
+            
+            self.timer = self.create_timer(0.1, self.timer_callback)
+            return super().on_activate(state)
+            # return TransitionCallbackReturn.SUCCESS
+
+        except Exception as e:
+            # This will print the exact line and message that caused the crash!
+            self.get_logger().error(f"ACTIVATION CRASHED: {str(e)}", throttle_duration_sec=1.0)
+            return TransitionCallbackReturn.FAILURE
 
     
     def on_deactivate(self, state):
@@ -64,10 +70,10 @@ class FollowLifecycleNode(LifecycleNode):
         self.get_logger().info("Deactivating node...")
         self.stop_robot()
         if self.pub is not None:
-            self.pub.on_deactivate()
+            self.pub.on_deactivate(state)
         
-        super().on_deactivate(state)
-        return TransitionCallbackReturn.SUCCESS
+        return super().on_deactivate(state)
+        # return TransitionCallbackReturn.SUCCESS
 
 
     def on_cleanup(self, state):
@@ -77,11 +83,11 @@ class FollowLifecycleNode(LifecycleNode):
         """
         self.get_logger().info("Cleaning up node...")
         
-        self.destroy_service(self.enable_srv)
-        self.destroy_service(self.disable_srv)
-        self.destroy_timer(self.timer)
-        self.destroy_publisher(self.pub)
-        self.destroy_subscription(self.sub)
+
+        if self.enable: self.destroy_service(self.enable)
+        if self.disable: self.destroy_service(self.disable)
+        if self.sub: self.destroy_subscription(self.sub)
+        if self.pub: self.destroy_publisher(self.pub)
 
         self.goal = None
         self.last_seen = None
@@ -127,7 +133,7 @@ class FollowLifecycleNode(LifecycleNode):
         heading_deadband = self.get_parameter('heading_deadband').value
         lost_timeout = self.get_parameter('lost_timeout').value
 
-        if self.pub is None or not self.pub.is_activated():
+        if self.pub is None or not self.pub.is_activated:
             return
         
         # --- marker-loss safety: stop if disabled, no goal, or detection is stale ---
@@ -179,7 +185,7 @@ class FollowLifecycleNode(LifecycleNode):
         self.get_logger().info(f'linear.x: {msg.linear.x:.3f}, angular.z: {msg.angular.z:.3f}.\n')
 
     def stop_robot(self):
-        if self.pub is not None and self.pub.is_activated():
+        if self.pub is not None and self.pub.is_activated:
             msg = Twist()
             msg.linear.x = 0.0
             msg.angular.z = 0.0
