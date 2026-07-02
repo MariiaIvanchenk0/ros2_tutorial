@@ -10,7 +10,7 @@ class FollowLifecycleNode(LifecycleNode):
     def __init__(self, output):
         super().__init__('follow')
 
-        # self.follow_enabled = False
+        self.follow_enabled = False
         self.goal = None
         self.last_seen = None
         self.output = output
@@ -38,7 +38,7 @@ class FollowLifecycleNode(LifecycleNode):
         self.disable = self.create_service(Empty, f'/{self.output}/disable_follow', self.disable_follow_callback)
         
         self.sub = self.create_subscription(Point, f'/{self.output}/aruco_position', self.position_callback, 10)
-        self.pub = self.create_publisher(Twist, f"/{self.output}/cmd_vel", 10)
+        self.pub = self.create_lifecycle_publisher(Twist, f"/{self.output}/cmd_vel", 10)
         self.create_timer(0.1, self.timer_callback)
         
         return TransitionCallbackReturn.SUCCESS
@@ -52,7 +52,7 @@ class FollowLifecycleNode(LifecycleNode):
         if self.pub is not None:
             self.pub.on_activate()
         
-        super().on_activate(state)
+        # super().on_activate(state)
         return TransitionCallbackReturn.SUCCESS
 
     
@@ -127,9 +127,12 @@ class FollowLifecycleNode(LifecycleNode):
         heading_deadband = self.get_parameter('heading_deadband').value
         lost_timeout = self.get_parameter('lost_timeout').value
 
+        if self.pub is None or not self.pub.is_activated():
+            return
+        
         # --- marker-loss safety: stop if disabled, no goal, or detection is stale ---
         marker_visible = (
-            # self.follow_enabled and
+            self.follow_enabled and
             self.goal is not None
             and self.last_seen is not None
             and (self.get_clock().now() - self.last_seen).nanoseconds * 1e-9 < lost_timeout
